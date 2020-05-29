@@ -4,13 +4,18 @@ import it.unisa.dia.gas.jpbc.Element;
 import it.unisa.dia.gas.jpbc.Field;
 import it.unisa.dia.gas.jpbc.Pairing;
 import it.unisa.dia.gas.plaf.jpbc.pairing.PairingFactory;
+import it.unisa.dia.gas.jpbc.PairingParameters;
+import it.unisa.dia.gas.plaf.jpbc.pairing.a.TypeACurveGenerator;
 
 
 
 public class Word {
     public static void main(String[] args) {
 
-        Pairing pairing = PairingFactory.getPairing("a.properties");
+        //Pairing pairing = PairingFactory.getPairing("a.properties");
+        TypeACurveGenerator pg = new TypeACurveGenerator(160, 512);
+        PairingParameters typeAParams = pg.generate();
+        Pairing pairing = PairingFactory.getPairing(typeAParams);
 
         Element g1 = pairing.getG1().newRandomElement().getImmutable();
         Element g2 = pairing.getG1().newRandomElement().getImmutable();
@@ -28,7 +33,7 @@ public class Word {
         Element PKu = g2.mulZn(SKu).getImmutable();
 
 
-        String keyword = "hello";
+        String keyword = "hotel";
         double t0 = System.currentTimeMillis();
 
         Element r = Zp.newRandomElement().getImmutable();  //生成随机数r
@@ -41,9 +46,9 @@ public class Word {
 
         Element temp1 = SKl.mulZn(hash_keyword).getImmutable();
         Element res1 = temp1.mulZn(r);
-
         Element temp2 = pairing.pairing(PKs, PKu).getImmutable();
         Element CW3 = temp2.powZn(res1);
+
         double t1 = System.currentTimeMillis();
         System.out.println("加密耗时：" + (t1 - t0)+"ms");
 
@@ -66,8 +71,8 @@ public class Word {
         Element Right = CW3.mul(V);
         double t5 = System.currentTimeMillis();
         System.out.println("查询耗时：" + (t5 - t4) + "ms");
-        System.out.println("Left:"+Left);
-        System.out.println("Right:"+Right);
+//        System.out.println("Left:"+Left);
+//        System.out.println("Right:"+Right);
 
 
     }

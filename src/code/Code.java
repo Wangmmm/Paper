@@ -2,6 +2,7 @@ package code;
 
 import java.util.ArrayList;
 import java.util.Random;
+
 import Jama.Matrix;
 
 
@@ -15,7 +16,7 @@ public class Code {
         Matrix matrix1 = Help.Generate(l);
         Matrix matrix2 = Help.Generate(l);
 
-        //定义比特串s
+        //定义{0,1}比特串s
         int[] s = new int[l];
         for (int i = 0; i < l; i++) {
             s[i] = r.nextInt(2);
@@ -24,29 +25,26 @@ public class Code {
         //定义d个随机数
         double[] d = new double[l - 4];
         for (int i = 0; i < d.length; i++) {
-            d[i] = r.nextInt(10);
-            if (d[d.length - 1] == 0) {
-                d[d.length - 1] = r.nextInt(10) + 1;
-            }
+            d[i] = r.nextInt() + 1;
         }
 
-         //定义（loc_p,loc_1）的位置分别为1和2
-         int loc_p = 1;
-         int loc_1 = 2;
+        //定义（loc_p,loc_1）的位置分别为1和2
+        int loc_p = 1;
+        int loc_1 = 2;
 
-         //创建一个l-2维的基向量Oo
-         double[] Oo = new double[l - 2];
+        //创建一个l-2维的基向量Oo
+        double[] Oo = new double[l - 2];
 
         //返回值
-         double[][] res1 = CircleTest_Enc(l, matrix1, matrix2, s, d);
-         double[] Ca_1 = new double[l];
-         double[] Cb_1 = new double[l];
-         for (int i = 0; i < l; i++) {
-             Ca_1[i] = res1[0][i];
-             Cb_1[i] = res1[1][i];
-         }
+        double[][] res1 = CircleTest_Enc(l, matrix1, matrix2, s, d);
+        double[] Ca_1 = new double[l];
+        double[] Cb_1 = new double[l];
+        for (int i = 0; i < l; i++) {
+            Ca_1[i] = res1[0][i];
+            Cb_1[i] = res1[1][i];
+        }
 
-         //调用函数
+        //解密
         CircleTest_Dec(l, matrix1, matrix2, s, Ca_1, Cb_1);
 
         //返回值
@@ -57,11 +55,16 @@ public class Code {
             Ta_1[i] = res3[0][i];
             Tb_1[i] = res3[1][i];
         }
+        //坐标测试
         CircleTest_Compare(Ca_1, Cb_1, Ta_1, Tb_1);
 
-         //调用函数
+//==========================================================================================
+
+        //调用函数
         double[] Cp_1 = RangeQuery_Enc(l, Oo, loc_p, loc_1, matrix2);
-        RangeQuery_Dec(Cp_1,matrix2);
+
+        RangeQuery_Dec(Cp_1, matrix2);
+
         double[][] res4 = RangeQuery_Trapdoor(l, Oo, loc_p, loc_1, matrix2);
         double[] T_1 = new double[l];
         double[] T_2 = new double[l];
@@ -69,12 +72,14 @@ public class Code {
             T_1[i] = res4[0][i];
             T_2[i] = res4[1][i];
         }
+        //价格测试
         RangeQuery_Compare(Cp_1, T_1, T_2);
 
     }
 
     /**
      * CircleTest 加密函数
+     *
      * @param l
      * @param matrix1
      * @param matrix2
@@ -83,9 +88,9 @@ public class Code {
      * @return
      */
     public static double[][] CircleTest_Enc(int l, Matrix matrix1, Matrix matrix2, int[] s, double[] d) {
-        //定义一个坐标点(x,y)=(5,9)
-        double x = 5;
-        double y = 9;
+        //定义一个坐标点(x,y)
+        double x = 3.4;
+        double y = 2.7;
         double[][] res = new double[2][l];
         double[] pa = new double[l];
         double[] pb = new double[l];
@@ -103,14 +108,13 @@ public class Code {
         //根据s[i]分裂
         for (int i = 0; i < l; i++) {
             if (s[i] == 1) {
-                pa[i] = r.nextInt(10);
+                pa[i] = r.nextInt();
                 pb[i] = p.get(i) - pa[i];
             } else {
                 pa[i] = pb[i] = p.get(i);
             }
         }
-        matrix1.transpose();
-        matrix2.transpose();
+//
 
         double[] Ca = MatrixMethod.VectorMul(matrix1, pa);
         double[] Cb = MatrixMethod.VectorMul(matrix2, pb);
@@ -127,6 +131,7 @@ public class Code {
 
     /**
      * CircleTest解密函数
+     *
      * @param l
      * @param matrix1
      * @param matrix2
@@ -147,13 +152,14 @@ public class Code {
             }
         }
         double t3 = System.currentTimeMillis();
-        System.out.print("坐标明文为："+"（"+"x=" + -(P[1] / 2)+"，"+"y=" + -(P[2] / 2)+"）");
-        System.out.println();
+//        System.out.print("坐标明文为："+"（"+"x=" + -(P[1] / 2)+"，"+"y=" + -(P[2] / 2)+"）");
+//        System.out.println();
         System.out.println("解密坐标耗时：" + (t3 - t2) + "ms");
     }
 
     /**
      * CircleTest 陷门生成函数
+     *
      * @param l
      * @param matrix1
      * @param matrix2
@@ -174,7 +180,7 @@ public class Code {
         double[][] res2 = new double[2][l];
         double[] r1 = new double[l - 5];
         for (int i = 0; i < l - 5; i++) {
-            r1[i] = r.nextInt(10);
+            r1[i] = r.nextInt();
         }
 
         ArrayList<Double> q = new ArrayList<>();
@@ -194,7 +200,7 @@ public class Code {
 
         for (int i = 0; i < l; i++) {
             if (s[i] == 0) {
-                qa[i] = r.nextInt(10);
+                qa[i] = r.nextInt();
                 qb[i] = q.get(i) - qa[i];
             } else {
                 qa[i] = qb[i] = q.get(i);
@@ -215,6 +221,7 @@ public class Code {
 
     /**
      * CircleTest测试函数
+     *
      * @param Ca
      * @param Cb
      * @param Ta
@@ -225,12 +232,15 @@ public class Code {
         double t7 = System.currentTimeMillis();
         double res = MatrixMethod.InnerProduct(Ca, Ta) + MatrixMethod.InnerProduct(Cb, Tb);
         double t8 = System.currentTimeMillis();
-        System.out.println("坐标匹配耗时：" + (t7 - t8) + "ms");
+        System.out.println("坐标测试耗时：" + (t7 - t8) + "ms");
 
     }
 
+//==========================================================================================
+
     /**
      * RangeQuery加密函数
+     *
      * @param l
      * @param Oo
      * @param loc_p
@@ -243,11 +253,11 @@ public class Code {
         double sum = 0;
         Random r = new Random();
         for (int i = 0; i < Oo.length; i++) {
-            Oo[i] = r.nextInt(10) + 1;
+            Oo[i] = r.nextInt() + 1;
         }
         double[] Ov = new double[l - 2];
         for (int i = 0; i < l - 3; i++) {
-            Ov[i] = r.nextInt(10);
+            Ov[i] = r.nextInt();
         }
         for (int i = 0; i < l - 3; i++) {
             sum += Oo[i] * Ov[i];
@@ -263,8 +273,8 @@ public class Code {
 //        }
 //        System.out.println();
 
-        //假设价格Price为5
-        int Price = 5;
+        //假设价格Price为9
+        double Price = 3.4;
         double t1 = System.currentTimeMillis();
         double[] P = new double[l];
 
@@ -292,15 +302,16 @@ public class Code {
 
     /**
      * RangeQuery解密函数
+     *
      * @param Cp
      * @param matrix
      */
-    public static void RangeQuery_Dec(double[] Cp ,Matrix matrix){
+    public static void RangeQuery_Dec(double[] Cp, Matrix matrix) {
         double t7 = System.currentTimeMillis();
         double[] P1 = MatrixMethod.VectorMul(matrix, Cp);
         double[] res = MatrixMethod.Division(P1, 3);
-        System.out.print("价格明文："+"P="+res[0]);
-        System.out.println();
+//        System.out.print("价格明文："+"P="+res[0]);
+//        System.out.println();
         double t8 = System.currentTimeMillis();
         System.out.println("解密价格耗时：" + (t8 - t7) + "ms");
 
@@ -308,6 +319,7 @@ public class Code {
 
     /**
      * RangeQuery 陷门生成函数
+     *
      * @param l
      * @param Oo
      * @param loc_p
@@ -352,6 +364,7 @@ public class Code {
 
     /**
      * RangeQuery测试函数
+     *
      * @param Cp
      * @param T1
      * @param T2
@@ -361,9 +374,8 @@ public class Code {
         double res1 = MatrixMethod.InnerProduct(Cp, T1);
         double res2 = MatrixMethod.InnerProduct(Cp, T2);
         double t6 = System.currentTimeMillis();
-        System.out.println("价格匹配耗时：" + (t6 - t5) + "ms");
+        System.out.println("价格测试耗时：" + (t6 - t5) + "ms");
     }
-
 
 
 }
